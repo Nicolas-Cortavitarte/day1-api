@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum WeightUnit {
+  KG
+  LB
+
+  @@map("weight_unit")
+}
+
+enum RecurrenceFrequency {
+  DAILY
+  WEEKLY
+
+  @@map("recurrence_frequency")
+}
+
+model User {
+  id          String  @id @db.Uuid 
+  email       String  @unique @db.VarChar(255)
+  displayName String? @map("display_name") @db.VarChar(80)
+  avatarUrl   String? @map("avatar_url")
+
+  timezone            String     @default("UTC") @db.VarChar(64) 
+  locale              String     @default("es") @db.VarChar(10)
+  weekStartsOn        Int        @default(1) @map("week_starts_on") @db.SmallInt
+  preferredWeightUnit WeightUnit @default(KG) @map("preferred_weight_unit")
+
+  notificationsEnabled   Boolean   @default(true) @map("notifications_enabled")
+  defaultReminderMinutes Int?      @default(10) @map("default_reminder_minutes") @db.SmallInt 
+  dailySummaryTime       DateTime? @map("daily_summary_time") @db.Time(0)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  activities  Activity[]
+  recurrences ActivityRecurrence[]
+  exercises   Exercise[]
+
+  @@map("users")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement()) @db.SmallInt
+  key       String   @unique @db.VarChar(30) 
+  name      String   @db.VarChar(50)
+  color     String   @db.Char(7) 
+  sortOrder Int      @default(0) @map("sort_order") @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  activities  Activity[]
+  recurrences ActivityRecurrence[]
+
+  @@map("categories")
+}
+
+model Activity {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  categoryId      Int       @map("category_id") @db.SmallInt
+  title           String    @db.VarChar(120)
+  description     String?   @db.VarChar(1000)
+  scheduledDate   DateTime  @map("scheduled_date") @db.Date
+  startTime       DateTime? @map("start_time") @db.Time(0) 
+  durationMinutes Int?      @map("duration_minutes") @db.SmallInt
+  reminderMinutes Int?      @map("reminder_minutes") @db.SmallInt
+  completedAt     DateTime? @map("completed_at") @db.Timestamptz(6) 
+
+  recurrenceId   String?   @map("recurrence_id") @db.Uuid
+  occurrenceDate DateTime? @map("occurrence_date") @db.Date 
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category             @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  recurrence  ActivityRecurrence?  @relation(fields: [recurrenceId], references: [id], onDelete: Cascade)
+  reschedules ActivityReschedule[]
+  workout     WorkoutSession?
+
+  @@unique([recurrenceId, occurrenceDate])
+  @@index([userId, scheduledDate, startTime])
+  @@index([userId, completedAt]) 
+  @@index([userId, categoryId, scheduledDate]) 
+  @@map("activities")
+}
+
+model ActivityReschedule {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  activityId String    @map("activity_id") @db.Uuid
+  fromDate   DateTime  @map("from_date") @db.Date
+  fromTime   DateTime? @map("from_time") @db.Time(0)
+  toDate     DateTime  @map("to_date") @db.Date
+  toTime     DateTime? @map("to_time") @db.Time(0)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([activityId, createdAt])
+  @@map("activity_reschedules")
+}
+
+model ActivityRecurrence {
+  id              String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String              @map("user_id") @db.Uuid
+  categoryId      Int                 @map("category_id") @db.SmallInt
+  title           String              @db.VarChar(120)
+  description     String?             @db.VarChar(1000)
+  startTime       DateTime?           @map("start_time") @db.Time(0)
+  durationMinutes Int?                @map("duration_minutes") @db.SmallInt
+  reminderMinutes Int?                @map("reminder_minutes") @db.SmallInt
+  frequency       RecurrenceFrequency
+  intervalCount   Int                 @default(1) @map("interval_count") @db.SmallInt
+  daysOfWeek      Int[]               @map("days_of_week") @db.SmallInt
+  startDate       DateTime            @map("start_date") @db.Date
+  endDate         DateTime?           @map("end_date") @db.Date 
+  generatedUntil  DateTime?           @map("generated_until") @db.Date 
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt       DateTime?           @map("deleted_at") @db.Timestamptz(6)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  activities Activity[]
+
+  @@index([userId, deletedAt])
+  @@map("activity_recurrences")
+}
+
+model Exercise {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String?   @map("user_id") @db.Uuid
+  name        String    @db.VarChar(100)
+  muscleGroup String?   @map("muscle_group") @db.VarChar(40)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  user             User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionExercises WorkoutSessionExercise[]
+
+  @@index([userId, name])
+  @@map("exercises")
+}
+
+model WorkoutSession {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  activityId String    @unique @map("activity_id") @db.Uuid
+  startedAt  DateTime? @map("started_at") @db.Timestamptz(6)
+  endedAt    DateTime? @map("ended_at") @db.Timestamptz(6)
+  notes      String?   @db.VarChar(1000)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  activity  Activity                 @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  exercises WorkoutSessionExercise[]
+
+  @@map("workout_sessions")
+}
+
+model WorkoutSessionExercise {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId  String  @map("session_id") @db.Uuid
+  exerciseId String  @map("exercise_id") @db.Uuid
+  position   Int     @db.SmallInt // orden dentro de la sesión
+  notes      String? @db.VarChar(500)
+
+  session  WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise Exercise       @relation(fields: [exerciseId], references: [id], onDelete: NoAction)
+  sets     WorkoutSet[]
+
+  @@unique([sessionId, position])
+  @@index([exerciseId])
+  @@map("workout_session_exercises")
+}
+
+model WorkoutSet {
+  id                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionExerciseId String      @map("session_exercise_id") @db.Uuid
+  setNumber         Int         @map("set_number") @db.SmallInt
+  reps              Int?        @db.SmallInt
+  weightValue       Decimal?    @map("weight_value") @db.Decimal(7, 2)
+  weightUnit        WeightUnit? @map("weight_unit")
+  durationSeconds   Int?        @map("duration_seconds")
+  completedAt       DateTime?   @map("completed_at") @db.Timestamptz(6)
+
+  sessionExercise WorkoutSessionExercise @relation(fields: [sessionExerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionExerciseId, setNumber])
+  @@map("workout_sets")
+}
