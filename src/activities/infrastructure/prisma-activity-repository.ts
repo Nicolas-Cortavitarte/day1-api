@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NewActivity, ActivityRepository } from '../application/activity-repository';
-import { Activity } from '../domain/activity';
+import { Activity, RescheduleInput } from '../domain/activity';
 
 @Injectable()
 export class PrismaActivityRepository extends ActivityRepository {
@@ -43,6 +43,25 @@ export class PrismaActivityRepository extends ActivityRepository {
 
   async softDelete(id: string): Promise<void> {
     await this.prisma.activity.update({ where: { id}, data: { deleteAt: new Date() }});
+  }
+
+  async reschedule(input: RescheduleInput): Promise<Activity> {
+    const [, row] = await this.prisma.$transaction([
+      this.prisma.activityReschedule.create({
+        data: {
+          activityId: input.activityId,
+          fromDate: toDateOnly(input.fromDate),
+          fromTime: input.fromTime ? toTimeOnly(input.fromTime) : null,
+          toDate: toDateOnly(input.toDate),
+          toTime: input.toTime ? toTimeOnly(input.toTime) : null,
+        },
+      }),
+      this.prisma.activity.update({
+        where: { id: input.activityId },
+        data: { scheduledDate: toDateOnly(input.toDate), startTime: input.toTime ? toTimeOnly(input.toTime) : null },
+      }),
+    ]);
+    return toDomain(row);
   }
 }
 

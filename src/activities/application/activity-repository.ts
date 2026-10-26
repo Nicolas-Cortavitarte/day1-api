@@ -1,4 +1,4 @@
-import { Activity } from '../domain/activity';
+import { Activity, RescheduleInput } from '../domain/activity';
 
 export type NewActivity = Omit<Activity, 'id' | 'completedAt' | 'createdAt' | 'updatedAt'>;
 
@@ -12,4 +12,6 @@ export abstract class ActivityRepository {
   abstract setCompletedAt(id: string, completedAt: Date | null): Promise<Activity>; 
 
   abstract softDelete(id: string): Promise<void>;
+
+  abstract reschedule(input: RescheduleInput): Promise<Activity>;
 }

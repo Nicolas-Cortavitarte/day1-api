@@ -13,3 +13,11 @@ export interface Activity {
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
+
+export interface RescheduleInput {
+  activityId: string;
+  fromDate: string;
+  fromTime: string | null;
+  toDate: string;
+  toTime: string | null;
+}
