@@ -30,6 +30,16 @@ export class PrismaActivityRepository extends ActivityRepository {
     });
     return rows.map(toDomain);
   }
+
+  async findById(id: string): Promise<Activity | null> {
+    const row = await this.prisma.activity.findFirst({ where: { id, deletedAt: null } });
+    return row ? toDomain(row) : null;
+  }
+
+  async setCompletedAt(id: string, completedAt: Date | null): Promise<Activity> {
+    const row = await this.prisma.activity.update({ where: { id }, data: { completedAt } });
+    return toDomain(row);
+  }
 }
 
 function toDateOnly(dateString: string): Date {
