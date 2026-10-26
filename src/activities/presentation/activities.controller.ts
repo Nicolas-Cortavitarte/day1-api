@@ -7,10 +7,15 @@ import {
   CreateActivityDto,
   CheckConflictsQueryDto,
 } from './create-activity.dto';
+import { ListActivitiesByDate } from '../application/list-activities-by-date';
+import { ListActivitiesQueryDto } from './list-activities.dto';
 
 @Controller('activities')
 export class ActivitiesController {
-  constructor(private readonly createActivity: CreateActivity, private readonly checkConflicts: CheckActivityConflicts) {}
+  constructor(private readonly createActivity: CreateActivity, 
+              private readonly checkConflicts: CheckActivityConflicts,
+              private readonly listActivities: ListActivitiesByDate,
+  ) {}
 
   @Post()
   create(
@@ -32,5 +37,10 @@ export class ActivitiesController {
       durationMinutes: query.durationMinutes ?? null,
       excludeActivityId: query.excludeActivityId,
     });
+  }
+
+  @Get()
+  list(@Query() query: ListActivitiesQueryDto, @CurrentUser() user: AuthenticatedUser) {
+  return this.listActivities.execute({ userId: user.id, scheduledDate: query.date });
   }
 }
