@@ -7,7 +7,7 @@ import {
   Param,
   Patch,
   Delete,
-  HttpCode
+  HttpCode,
 } from '@nestjs/common';
 import { CurrentUser } from '../../auth/presentation/current-user.decorator';
 import type { AuthenticatedUser } from '../../auth/authenticated-user';
@@ -21,6 +21,9 @@ import { ListActivitiesByDate } from '../application/list-activities-by-date';
 import { ListActivitiesQueryDto } from './list-activities.dto';
 import { SetActivityCompletion } from '../application/set-activity-completion';
 import { DeleteActivity } from '../application/delete-activity';
+import { RescheduleActivity } from '../application/reschedule-activity';
+import { RescheduleActivityDto } from './reschedule-activity.dto';
+
 @Controller('activities')
 export class ActivitiesController {
   constructor(
@@ -29,6 +32,7 @@ export class ActivitiesController {
     private readonly listActivities: ListActivitiesByDate,
     private readonly setCompletion: SetActivityCompletion,
     private readonly deleteActivity: DeleteActivity,
+    private readonly rescheduleActivity: RescheduleActivity,
   ) {}
 
   @Post()
@@ -84,7 +88,24 @@ export class ActivitiesController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     await this.deleteActivity.execute({ activityId: id, userId: user.id });
+  }
+
+  @Patch(':id/reschedule')
+  reschedule(
+    @Param('id') id: string,
+    @Body() dto: RescheduleActivityDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.rescheduleActivity.execute({
+      activityId: id,
+      userId: user.id,
+      toDate: dto.toDate,
+      toTime: dto.toTime ?? null,
+    });
   }
 }
