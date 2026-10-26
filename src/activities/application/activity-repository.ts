@@ -10,4 +10,6 @@ export abstract class ActivityRepository {
   abstract findById(id: string): Promise<Activity | null>;
 
   abstract setCompletedAt(id: string, completedAt: Date | null): Promise<Activity>; 
+
+  abstract softDelete(id: string): Promise<void>;
 }

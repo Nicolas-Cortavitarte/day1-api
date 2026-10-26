@@ -5,12 +5,13 @@ import { PrismaActivityRepository } from './infrastructure/prisma-activity-repos
 import { ActivitiesController } from './presentation/activities.controller';
 import { CheckActivityConflicts } from './application/check-activity-conflicts';
 import { ListActivitiesByDate } from './application/list-activities-by-date';
+import { DeleteActivity } from './application/delete-activity';
 
 @Module({
   controllers: [ActivitiesController],
   providers: [
     { provide: ActivityRepository, useClass: PrismaActivityRepository },
-    CreateActivity, CheckActivityConflicts, ListActivitiesByDate
+    CreateActivity, CheckActivityConflicts, ListActivitiesByDate, DeleteActivity
   ],
 })
 export class ActivitiesModule {}

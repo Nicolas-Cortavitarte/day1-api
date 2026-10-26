@@ -40,6 +40,10 @@ export class PrismaActivityRepository extends ActivityRepository {
     const row = await this.prisma.activity.update({ where: { id }, data: { completedAt } });
     return toDomain(row);
   }
+
+  async softDelete(id: string): Promise<void> {
+    await this.prisma.activity.update({ where: { id}, data: { deleteAt: new Date() }});
+  }
 }
 
 function toDateOnly(dateString: string): Date {
