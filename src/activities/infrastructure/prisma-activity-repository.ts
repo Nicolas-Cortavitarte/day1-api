@@ -9,17 +9,23 @@ export class PrismaActivityRepository extends ActivityRepository {
     super();
   }
 
-  async create(activity: NewActivity): Promise<Activity> {
-    const row = await this.prisma.activity.create({
-      data: {
-        userId: activity.userId,
-        categoryId: activity.categoryId,
-        title: activity.title,
-        description: activity.description,
-        scheduledDate: toDateOnly(activity.scheduledDate),
-        startTime: activity.startTime ? toTimeOnly(activity.startTime) : null,
-        durationMinutes: activity.durationMinutes,
-      },
+  async create(activity: NewActivity, options?: { createWorkoutSession: boolean }): Promise<Activity> {
+    const row = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.activity.create({
+        data: {
+          userId: activity.userId,
+          categoryId: activity.categoryId,
+          title: activity.title,
+          description: activity.description,
+          scheduledDate: toDateOnly(activity.scheduledDate),
+          startTime: activity.startTime ? toTimeOnly(activity.startTime) : null,
+          durationMinutes: activity.durationMinutes,
+        },
+      });
+      if (options?.createWorkoutSession) {
+        await tx.workoutSession.create({ data: { activityId: created.id } });
+      }
+      return created;
     });
     return toDomain(row);
   }

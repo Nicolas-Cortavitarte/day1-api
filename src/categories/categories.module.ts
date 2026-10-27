@@ -10,5 +10,6 @@ import { CategoriesController } from './presentation/categories.controller';
     { provide: CategoryRepository, useClass: PrismaCategoryRepository },
     ListCategories,
   ],
+  exports: [CategoryRepository]
 })
 export class CategoriesModule {}

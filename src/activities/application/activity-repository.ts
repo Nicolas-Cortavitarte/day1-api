@@ -3,7 +3,7 @@ import { Activity, RescheduleInput } from '../domain/activity';
 export type NewActivity = Omit<Activity, 'id' | 'completedAt' | 'createdAt' | 'updatedAt'>;
 
 export abstract class ActivityRepository {
-  abstract create(activity: NewActivity): Promise<Activity>;
+  abstract create(activity: NewActivity, options?: { createWorkoutSession: boolean }): Promise<Activity>;
 
   abstract findByUserAndDate(userId: string, date: string): Promise<Activity[]>;
 

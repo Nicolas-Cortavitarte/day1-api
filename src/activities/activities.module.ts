@@ -6,8 +6,10 @@ import { ActivitiesController } from './presentation/activities.controller';
 import { CheckActivityConflicts } from './application/check-activity-conflicts';
 import { ListActivitiesByDate } from './application/list-activities-by-date';
 import { DeleteActivity } from './application/delete-activity';
+import { CategoriesModule } from '../categories/categories.module'; 
 
 @Module({
+  imports:[CategoriesModule],
   controllers: [ActivitiesController],
   providers: [
     { provide: ActivityRepository, useClass: PrismaActivityRepository },
