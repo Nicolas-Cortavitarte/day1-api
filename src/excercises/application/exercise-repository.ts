@@ -6,4 +6,6 @@ export abstract class ExerciseRepository {
   abstract findAvailableFor(userId: string): Promise<Exercise[]>;
 
   abstract create(exercise: NewExercise): Promise<Exercise>;
+
+  abstract findById(id: string): Promise<Exercise | null>;
 }

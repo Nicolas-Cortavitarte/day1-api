@@ -15,5 +15,6 @@ import { CategoriesModule } from '../categories/categories.module';
     { provide: ActivityRepository, useClass: PrismaActivityRepository },
     CreateActivity, CheckActivityConflicts, ListActivitiesByDate, DeleteActivity
   ],
+  exports: [ActivityRepository]
 })
 export class ActivitiesModule {}

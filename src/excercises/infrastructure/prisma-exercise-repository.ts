@@ -19,4 +19,8 @@ export class PrismaExerciseRepository extends ExerciseRepository {
   async create(exercise: NewExercise): Promise<Exercise> {
     return this.prisma.exercise.create({ data: exercise });
   }
+
+  async findById(id: string): Promise<Exercise | null> {
+    return this.prisma.exercise.findFirst({ where: { id, deletedAt: null } });
+  }
 }
