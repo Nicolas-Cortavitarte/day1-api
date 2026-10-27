@@ -12,5 +12,6 @@ import { ExercisesController } from './presentation/exercises.controller';
     ListAvailableExercises,
     CreateExercise,
   ],
+  exports: [ExerciseRepository]
 })
 export class ExercisesModule {}
