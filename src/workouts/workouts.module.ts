@@ -7,14 +7,19 @@ import { WorkoutSessionRepository } from './application/workout-session-reposito
 import { PrismaWorkoutSessionExerciseRepository } from './infrastructure/prisma-workout-session-exercise-repository';
 import { PrismaWorkoutSessionRepository } from './infrastructure/prisma-workout-session-repository';
 import { WorkoutsController } from './presentation/workouts.controller';
+import { WorkoutSetsController } from './presentation/workout-sets.controller';
+import { WorkoutSetRepository } from './application/workout-set-repository';
+import { PrismaWorkoutSetRepository } from './infrastructure/prisma-workout-set-repository';
+import { LogSet } from './application/log-set';
 
 @Module({
   imports: [ActivitiesModule, ExercisesModule],
-  controllers: [WorkoutsController],
+  controllers: [WorkoutsController, WorkoutSetsController],
   providers: [
     { provide: WorkoutSessionRepository, useClass: PrismaWorkoutSessionRepository },
     { provide: WorkoutSessionExerciseRepository, useClass: PrismaWorkoutSessionExerciseRepository },
     AddExerciseToSession,
+    { provide: WorkoutSetRepository, useClass: PrismaWorkoutSetRepository}, LogSet,
   ],
 })
 export class WorkoutsModule {}

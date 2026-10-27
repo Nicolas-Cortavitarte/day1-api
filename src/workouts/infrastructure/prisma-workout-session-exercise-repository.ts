@@ -19,4 +19,8 @@ export class PrismaWorkoutSessionExerciseRepository extends WorkoutSessionExerci
       data: { sessionId: input.sessionId, exerciseId: input.exerciseId, notes: input.notes, position: nextPosition },
     });
   }
+
+  async findById(id: string): Promise<WorkoutSessionExercise | null> {
+    return this.prisma.workoutSessionExercise.findUnique({ where: {id} });
+  }
 }

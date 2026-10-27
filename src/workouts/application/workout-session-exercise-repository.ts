@@ -6,4 +6,6 @@ export abstract class WorkoutSessionExerciseRepository {
   abstract countForSession(sessionId: string): Promise<number>;
   
   abstract add(input: NewSessionExercise): Promise<WorkoutSessionExercise>;
+
+  abstract findById(id: string): Promise <WorkoutSessionExercise | null>; 
 }

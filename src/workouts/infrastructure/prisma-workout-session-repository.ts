@@ -12,4 +12,8 @@ export class PrismaWorkoutSessionRepository extends WorkoutSessionRepository {
   async findByActivityId(activityId: string): Promise<WorkoutSession | null> {
     return this.prisma.workoutSession.findUnique({ where: { activityId } });
   }
+
+  async findById(id: string): Promise<WorkoutSession | null> {
+    return this.prisma.workoutSession.findUnique({ where: {id} });
+  }
 }
