@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NewActivity, ActivityRepository } from '../application/activity-repository';
 import { Activity, RescheduleInput } from '../domain/activity';
+import { toDateOnly, toTimeOnly, fromDateOnly, fromTimeOnly } from '../../shared/date-conversion';
 
 @Injectable()
 export class PrismaActivityRepository extends ActivityRepository {
@@ -69,22 +70,6 @@ export class PrismaActivityRepository extends ActivityRepository {
     ]);
     return toDomain(row);
   }
-}
-
-function toDateOnly(dateString: string): Date {
-  return new Date(`${dateString}T00:00:00Z`);
-}
-
-function toTimeOnly(timeString: string): Date {
-  return new Date(`1970-01-01T${timeString}Z`);
-}
-
-function fromDateOnly(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function fromTimeOnly(date: Date): string {
-  return date.toISOString().slice(11, 19);
 }
 
 function toDomain(row: {
