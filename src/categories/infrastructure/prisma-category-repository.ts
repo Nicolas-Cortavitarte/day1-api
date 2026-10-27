@@ -13,4 +13,8 @@ export class PrismaCategoryRepository extends CategoryRepository {
     const rows = await this.prisma.category.findMany({ orderBy: { sortOrder: 'asc' } });
     return rows;
   }
+
+  async findByKey(key: string): Promise<Category | null> {
+    return this.prisma.category.findUnique({ where: {key} });
+  }
 }

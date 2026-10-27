@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CategoryRepository } from '../../categories/application/category-repository'; 
 import { Activity } from '../domain/activity';
 import { ActivityRepository } from './activity-repository';
 
@@ -14,9 +15,14 @@ export interface CreateActivityInput {
 
 @Injectable()
 export class CreateActivity {
-  constructor(private readonly activities: ActivityRepository) {}
+  constructor(private readonly activities: ActivityRepository,
+              private readonly categories: CategoryRepository,
+  ) {}
 
-  execute(input: CreateActivityInput): Promise<Activity> {
+  async execute(input: CreateActivityInput): Promise<Activity> {
+    const gymCategory = await this.categories.findByKey('gym');
+    const isGymActivity = gymCategory != null && gymCategory.id === input.categoryId;
+
     return this.activities.create({
       userId: input.userId,
       categoryId: input.categoryId,
@@ -25,6 +31,8 @@ export class CreateActivity {
       scheduledDate: input.scheduledDate,
       startTime: input.startTime ?? null,
       durationMinutes: input.durationMinutes ?? null,
-    });
+    }, 
+    { createWorkoutSession: isGymActivity }, 
+  );
   }
 }
