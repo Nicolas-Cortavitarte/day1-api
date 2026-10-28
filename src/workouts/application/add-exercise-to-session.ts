@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ActivityRepository } from '../../activities/application/activity-repository';
-import { ExerciseRepository } from '../../excercises/application/exercise-repository';
+import { ExerciseRepository } from '../../exercises/application/exercise-repository';
 import { WorkoutSessionExercise } from '../domain/workout-session-exercise';
 import { WorkoutSessionExerciseRepository } from './workout-session-exercise-repository';
 import { WorkoutSessionRepository } from './workout-session-repository';

@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { CategoriesModule } from './categories/categories.module';
-import { ExercisesModule } from './excercises/exercises.module';
+import { ExercisesModule } from './exercises/exercises.module';
 
 @Module({
   imports: [PrismaModule, AuthModule, ActivitiesModule, CategoriesModule, ExercisesModule],

@@ -23,6 +23,7 @@ import { SetActivityCompletion } from '../application/set-activity-completion';
 import { DeleteActivity } from '../application/delete-activity';
 import { RescheduleActivity } from '../application/reschedule-activity';
 import { RescheduleActivityDto } from './reschedule-activity.dto';
+import { GetActivity } from '../application/get-activity';
 
 @Controller('activities')
 export class ActivitiesController {
@@ -33,6 +34,7 @@ export class ActivitiesController {
     private readonly setCompletion: SetActivityCompletion,
     private readonly deleteActivity: DeleteActivity,
     private readonly rescheduleActivity: RescheduleActivity,
+    private readonly getActivity: GetActivity,
   ) {}
 
   @Post()
@@ -55,6 +57,11 @@ export class ActivitiesController {
       durationMinutes: query.durationMinutes ?? null,
       excludeActivityId: query.excludeActivityId,
     });
+  }
+
+  @Get(':id')
+  getOne(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.getActivity.execute({ activityId: id, userId: user.id });
   }
 
   @Get()
