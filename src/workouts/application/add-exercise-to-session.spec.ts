@@ -1,8 +1,8 @@
 import { NotFoundException } from '@nestjs/common';
 import { Activity } from '../../activities/domain/activity';
 import { ActivityRepository } from '../../activities/application/activity-repository';
-import { Exercise } from '../../excercises/domain/exercise';
-import { ExerciseRepository } from '../../excercises/application/exercise-repository';
+import { Exercise } from '../../exercises/domain/exercise';
+import { ExerciseRepository } from '../../exercises/application/exercise-repository';
 import { WorkoutSession } from '../domain/workout-session';
 import { WorkoutSessionRepository } from './workout-session-repository';
 import { WorkoutSessionExercise } from '../domain/workout-session-exercise';
