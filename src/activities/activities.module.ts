@@ -14,6 +14,7 @@ import { PrismaActivityRepository } from './infrastructure/prisma-activity-repos
 import { PrismaActivityRecurrenceRepository } from './infrastructure/prisma-activity-recurrence-repository';
 import { ActivityRecurrencesController } from './infrastructure/activity-recurrences.controller';
 import { ActivitiesController } from './presentation/activities.controller';
+import { UpdateActivity } from './application/update-activity';
 
 @Module({
   imports: [CategoriesModule],
@@ -26,6 +27,7 @@ import { ActivitiesController } from './presentation/activities.controller';
     ListActivitiesByDate,
     SetActivityCompletion,
     DeleteActivity,
+    UpdateActivity,
     RescheduleActivity,
     GetActivity,
     CreateActivityRecurrence,
