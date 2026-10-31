@@ -24,6 +24,8 @@ import { DeleteActivity } from '../application/delete-activity';
 import { RescheduleActivity } from '../application/reschedule-activity';
 import { RescheduleActivityDto } from './reschedule-activity.dto';
 import { GetActivity } from '../application/get-activity';
+import { UpdateActivity } from '../application/update-activity';
+import { UpdateActivityDto } from './update-activity.dto';
 
 @Controller('activities')
 export class ActivitiesController {
@@ -35,6 +37,7 @@ export class ActivitiesController {
     private readonly deleteActivity: DeleteActivity,
     private readonly rescheduleActivity: RescheduleActivity,
     private readonly getActivity: GetActivity,
+    private readonly updateActivity: UpdateActivity,
   ) {}
 
   @Post()
@@ -100,6 +103,19 @@ export class ActivitiesController {
     @CurrentUser() user: AuthenticatedUser,
   ) {
     await this.deleteActivity.execute({ activityId: id, userId: user.id });
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateActivityDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.updateActivity.execute({
+      ...dto,
+      activityId: id,
+      userId: user.id,
+    });
   }
 
   @Patch(':id/reschedule')

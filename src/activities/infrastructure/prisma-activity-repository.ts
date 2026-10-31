@@ -49,7 +49,15 @@ export class PrismaActivityRepository extends ActivityRepository {
   }
 
   async softDelete(id: string): Promise<void> {
-    await this.prisma.activity.update({ where: { id}, data: { deleteAt: new Date() }});
+    await this.prisma.activity.update({ where: { id }, data: { deletedAt: new Date() } });
+  }
+
+  async update(
+    id: string,
+    changes: Partial<Pick<Activity, 'title' | 'description' | 'categoryId' | 'durationMinutes'>>,
+  ): Promise<Activity> {
+    const row = await this.prisma.activity.update({ where: { id }, data: changes });
+    return toDomain(row);
   }
 
   async reschedule(input: RescheduleInput): Promise<Activity> {

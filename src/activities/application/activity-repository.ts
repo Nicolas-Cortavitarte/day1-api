@@ -1,17 +1,33 @@
 import { Activity, RescheduleInput } from '../domain/activity';
 
-export type NewActivity = Omit<Activity, 'id' | 'completedAt' | 'createdAt' | 'updatedAt'>;
+export type NewActivity = Omit<
+  Activity,
+  'id' | 'completedAt' | 'createdAt' | 'updatedAt'
+>;
 
 export abstract class ActivityRepository {
-  abstract create(activity: NewActivity, options?: { createWorkoutSession: boolean }): Promise<Activity>;
+  abstract create(
+    activity: NewActivity,
+    options?: { createWorkoutSession: boolean },
+  ): Promise<Activity>;
 
   abstract findByUserAndDate(userId: string, date: string): Promise<Activity[]>;
 
   abstract findById(id: string): Promise<Activity | null>;
 
-  abstract setCompletedAt(id: string, completedAt: Date | null): Promise<Activity>; 
+  abstract setCompletedAt(
+    id: string,
+    completedAt: Date | null,
+  ): Promise<Activity>;
 
   abstract softDelete(id: string): Promise<void>;
+
+  abstract update(
+    id: string,
+    changes: Partial<
+      Pick<Activity, 'title' | 'description' | 'categoryId' | 'durationMinutes'>
+    >,
+  ): Promise<Activity>;
 
   abstract reschedule(input: RescheduleInput): Promise<Activity>;
 }
