@@ -14,10 +14,17 @@ import { LogSet } from './application/log-set';
 import { WorkoutSessionDetailRepository } from './application/workout-session-detail-repository';
 import { PrismaWorkoutSessionDetailRepository } from './infrastructure/prisma-workout-session-detail-repository';
 import { GetWorkoutSession } from './application/get-workout-session';
+import { ExerciseProgressController } from './presentation/exercise-progress.controller';
+import { WorkoutHistoryRepository } from './application/workout-history-repository';
+import { PrismaWorkoutHistoryRepository } from './infrastructure/prisma-workout-history-repository';
+import { ListWorkoutHistory } from './application/list-workout-history';
+import { ExerciseProgressRepository } from './application/exercise-progress-repository';
+import { PrismaExerciseProgressRepository } from './infrastructure/prisma-exercise-progress-repository';
+import { GetExerciseProgress } from './application/get-exercise-progress';
 
 @Module({
   imports: [ActivitiesModule, ExercisesModule],
-  controllers: [WorkoutsController, WorkoutSetsController],
+  controllers: [WorkoutsController, WorkoutSetsController, ExerciseProgressController],
   providers: [
     { provide: WorkoutSessionRepository, useClass: PrismaWorkoutSessionRepository },
     { provide: WorkoutSessionExerciseRepository, useClass: PrismaWorkoutSessionExerciseRepository },
@@ -25,6 +32,10 @@ import { GetWorkoutSession } from './application/get-workout-session';
     { provide: WorkoutSetRepository, useClass: PrismaWorkoutSetRepository}, LogSet,
     { provide: WorkoutSessionDetailRepository, useClass: PrismaWorkoutSessionDetailRepository },
     GetWorkoutSession,
+    { provide: WorkoutHistoryRepository, useClass: PrismaWorkoutHistoryRepository },
+    ListWorkoutHistory,
+    { provide: ExerciseProgressRepository, useClass: PrismaExerciseProgressRepository },
+    GetExerciseProgress,
   ],
 })
 export class WorkoutsModule {}
