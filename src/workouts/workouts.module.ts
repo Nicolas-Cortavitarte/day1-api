@@ -21,10 +21,11 @@ import { ListWorkoutHistory } from './application/list-workout-history';
 import { ExerciseProgressRepository } from './application/exercise-progress-repository';
 import { PrismaExerciseProgressRepository } from './infrastructure/prisma-exercise-progress-repository';
 import { GetExerciseProgress } from './application/get-exercise-progress';
+import { WorkoutHistoryController } from './presentation/workout-history.controller';
 
 @Module({
   imports: [ActivitiesModule, ExercisesModule],
-  controllers: [WorkoutsController, WorkoutSetsController, ExerciseProgressController],
+  controllers: [WorkoutsController, WorkoutSetsController, ExerciseProgressController, WorkoutHistoryController],
   providers: [
     { provide: WorkoutSessionRepository, useClass: PrismaWorkoutSessionRepository },
     { provide: WorkoutSessionExerciseRepository, useClass: PrismaWorkoutSessionExerciseRepository },
