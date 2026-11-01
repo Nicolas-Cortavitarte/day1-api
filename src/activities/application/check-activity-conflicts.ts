@@ -33,11 +33,11 @@ function overlaps(
   a: { startTime: string | null; durationMinutes: number | null },
   b: { startTime: string | null; durationMinutes: number | null },
 ): boolean {
-  if (a.durationMinutes == null || b.durationMinutes == null) return false;
-
   const [startA, endA] = toRange(a);
   const [startB, endB] = toRange(b);
-  return startA < endB && startB < endA;
+
+  const eitherIsPoint = startA === endA || startB === endB;
+  return eitherIsPoint ? startA <= endB && startB <= endA : startA < endB && startB < endA;
 }
 
 function toRange(a: {
@@ -45,7 +45,7 @@ function toRange(a: {
   durationMinutes: number | null;
 }): [number, number] {
   const start = toMinutes(a.startTime!);
-  const end = a.durationMinutes != null ? start + a.durationMinutes : start;
+  const end = a.durationMinutes != null ? start + a.durationMinutes : start; // sin duración = punto en el tiempo
   return [start, end];
 }
 
