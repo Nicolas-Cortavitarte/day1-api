@@ -60,7 +60,7 @@ describe('CheckActivityConflicts', () => {
     ).resolves.toEqual([]);
   });
 
-  it('sin duración: nunca choca, ni siquiera con la misma hora exacta', async () => {
+  it('sin duración: choca si coincide con el instante exacto de otra actividad', async () => {
     const existing = [make({ startTime: '09:00:00' })];
     await expect(
       run(existing, {
@@ -68,10 +68,10 @@ describe('CheckActivityConflicts', () => {
         startTime: '09:00:00',
         durationMinutes: null,
       }),
-    ).resolves.toEqual([]);
+    ).resolves.toHaveLength(1);
   });
 
-  it('sin duración no bloquea a otra actividad con duración', async () => {
+  it('sin duración: sí choca si ese instante cae dentro del rango de otra actividad con duración', async () => {
     const existing = [make({ startTime: '09:00:00', durationMinutes: null })];
     await expect(
       run(existing, {
@@ -79,7 +79,7 @@ describe('CheckActivityConflicts', () => {
         startTime: '09:00:00',
         durationMinutes: 30,
       }),
-    ).resolves.toEqual([]);
+    ).resolves.toHaveLength(1);
   });
 
   it('con duración: choca si los rangos se solapan', async () => {
