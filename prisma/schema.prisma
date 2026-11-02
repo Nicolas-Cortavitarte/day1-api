@@ -1,9 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["public", "auth"]
 }
 
 enum WeightUnit {
@@ -11,6 +13,7 @@ enum WeightUnit {
   LB
 
   @@map("weight_unit")
+  @@schema("public")
 }
 
 enum RecurrenceFrequency {
@@ -18,21 +21,49 @@ enum RecurrenceFrequency {
   WEEKLY
 
   @@map("recurrence_frequency")
+  @@schema("public")
+}
+
+enum ThemePreference {
+  LIGHT
+  DARK
+  SYSTEM
+
+  @@map("theme_preference")
+  @@schema("public")
+}
+
+enum FontScale {
+  SMALL
+  MEDIUM
+  LARGE
+
+  @@map("font_scale")
+  @@schema("public")
+}
+
+model AuthUser {
+  id String @id @db.Uuid
+
+  @@map("users")
+  @@schema("auth")
 }
 
 model User {
-  id          String  @id @db.Uuid 
+  id          String  @id @db.Uuid
   email       String  @unique @db.VarChar(255)
   displayName String? @map("display_name") @db.VarChar(80)
   avatarUrl   String? @map("avatar_url")
 
-  timezone            String     @default("UTC") @db.VarChar(64) 
-  locale              String     @default("es") @db.VarChar(10)
-  weekStartsOn        Int        @default(1) @map("week_starts_on") @db.SmallInt
-  preferredWeightUnit WeightUnit @default(KG) @map("preferred_weight_unit")
+  timezone            String          @default("UTC") @db.VarChar(64)
+  locale              String          @default("es") @db.VarChar(10)
+  weekStartsOn        Int             @default(1) @map("week_starts_on") @db.SmallInt
+  preferredWeightUnit WeightUnit      @default(KG) @map("preferred_weight_unit")
+  theme               ThemePreference @default(SYSTEM) @map("theme")
+  fontScale           FontScale       @default(MEDIUM) @map("font_scale")
 
   notificationsEnabled   Boolean   @default(true) @map("notifications_enabled")
-  defaultReminderMinutes Int?      @default(10) @map("default_reminder_minutes") @db.SmallInt 
+  defaultReminderMinutes Int?      @default(10) @map("default_reminder_minutes") @db.SmallInt
   dailySummaryTime       DateTime? @map("daily_summary_time") @db.Time(0)
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -42,22 +73,28 @@ model User {
   activities  Activity[]
   recurrences ActivityRecurrence[]
   exercises   Exercise[]
+  categories  Category[]
 
   @@map("users")
+  @@schema("public")
 }
 
 model Category {
-  id        Int      @id @default(autoincrement()) @db.SmallInt
-  key       String   @unique @db.VarChar(30) 
-  name      String   @db.VarChar(50)
-  color     String   @db.Char(7) 
-  sortOrder Int      @default(0) @map("sort_order") @db.SmallInt
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id        Int       @id @default(autoincrement()) @db.SmallInt
+  key       String?   @unique @db.VarChar(30)
+  userId    String?   @map("user_id") @db.Uuid
+  name      String    @db.VarChar(50)
+  color     String    @db.Char(7)
+  sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
 
+  user        User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
   activities  Activity[]
   recurrences ActivityRecurrence[]
 
   @@map("categories")
+  @@schema("public")
 }
 
 model Activity {
@@ -67,13 +104,13 @@ model Activity {
   title           String    @db.VarChar(120)
   description     String?   @db.VarChar(1000)
   scheduledDate   DateTime  @map("scheduled_date") @db.Date
-  startTime       DateTime? @map("start_time") @db.Time(0) 
+  startTime       DateTime? @map("start_time") @db.Time(0)
   durationMinutes Int?      @map("duration_minutes") @db.SmallInt
   reminderMinutes Int?      @map("reminder_minutes") @db.SmallInt
-  completedAt     DateTime? @map("completed_at") @db.Timestamptz(6) 
+  completedAt     DateTime? @map("completed_at") @db.Timestamptz(6)
 
   recurrenceId   String?   @map("recurrence_id") @db.Uuid
-  occurrenceDate DateTime? @map("occurrence_date") @db.Date 
+  occurrenceDate DateTime? @map("occurrence_date") @db.Date
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -87,9 +124,10 @@ model Activity {
 
   @@unique([recurrenceId, occurrenceDate])
   @@index([userId, scheduledDate, startTime])
-  @@index([userId, completedAt]) 
-  @@index([userId, categoryId, scheduledDate]) 
+  @@index([userId, completedAt])
+  @@index([userId, categoryId, scheduledDate])
   @@map("activities")
+  @@schema("public")
 }
 
 model ActivityReschedule {
@@ -105,6 +143,7 @@ model ActivityReschedule {
 
   @@index([activityId, createdAt])
   @@map("activity_reschedules")
+  @@schema("public")
 }
 
 model ActivityRecurrence {
@@ -120,8 +159,8 @@ model ActivityRecurrence {
   intervalCount   Int                 @default(1) @map("interval_count") @db.SmallInt
   daysOfWeek      Int[]               @map("days_of_week") @db.SmallInt
   startDate       DateTime            @map("start_date") @db.Date
-  endDate         DateTime?           @map("end_date") @db.Date 
-  generatedUntil  DateTime?           @map("generated_until") @db.Date 
+  endDate         DateTime?           @map("end_date") @db.Date
+  generatedUntil  DateTime?           @map("generated_until") @db.Date
   createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt       DateTime?           @map("deleted_at") @db.Timestamptz(6)
@@ -132,6 +171,7 @@ model ActivityRecurrence {
 
   @@index([userId, deletedAt])
   @@map("activity_recurrences")
+  @@schema("public")
 }
 
 model Exercise {
@@ -147,6 +187,7 @@ model Exercise {
 
   @@index([userId, name])
   @@map("exercises")
+  @@schema("public")
 }
 
 model WorkoutSession {
@@ -162,6 +203,7 @@ model WorkoutSession {
   exercises WorkoutSessionExercise[]
 
   @@map("workout_sessions")
+  @@schema("public")
 }
 
 model WorkoutSessionExercise {
@@ -178,6 +220,7 @@ model WorkoutSessionExercise {
   @@unique([sessionId, position])
   @@index([exerciseId])
   @@map("workout_session_exercises")
+  @@schema("public")
 }
 
 model WorkoutSet {
@@ -194,4 +237,5 @@ model WorkoutSet {
 
   @@unique([sessionExerciseId, setNumber])
   @@map("workout_sets")
+  @@schema("public")
 }

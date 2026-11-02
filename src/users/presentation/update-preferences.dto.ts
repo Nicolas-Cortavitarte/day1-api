@@ -8,4 +8,6 @@ export class UpdatePreferencesDto {
   @IsOptional() @IsBoolean() notificationsEnabled?: boolean;
   @IsOptional() @IsInt() @Min(0) @Max(1440) defaultReminderMinutes?: number;
   @IsOptional() @Matches(/^\d{2}:\d{2}(:\d{2})?$/) dailySummaryTime?: string;
+  @IsOptional() @IsIn(['LIGHT', 'DARK', 'SYSTEM']) theme?: 'LIGHT' | 'DARK' | 'SYSTEM';
+  @IsOptional() @IsIn(['SMALL', 'MEDIUM', 'LARGE']) fontScale?: 'SMALL' | 'MEDIUM' | 'LARGE';
 }

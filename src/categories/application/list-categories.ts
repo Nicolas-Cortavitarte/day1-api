@@ -6,7 +6,7 @@ import { CategoryRepository } from './category-repository';
 export class ListCategories {
   constructor(private readonly categories: CategoryRepository) {}
 
-  execute(): Promise<Category[]> {
-    return this.categories.findAll();
+  execute(userId: string): Promise<Category[]> {
+    return this.categories.findAvailableFor(userId);
   }
 }
