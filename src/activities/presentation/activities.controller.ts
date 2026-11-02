@@ -65,8 +65,16 @@ export class ActivitiesController {
     });
   }
 
+  @Get('stats')
+  stats(
+    @Query() query: ActivityStatsQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.getActivityStats.execute(user.id, query.today);
+  }
+
   @Get(':id')
-  getOne(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+  get(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.getActivity.execute({ activityId: id, userId: user.id });
   }
 
@@ -133,18 +141,5 @@ export class ActivitiesController {
       toDate: dto.toDate,
       toTime: dto.toTime ?? null,
     });
-  }
-
-  @Get('stats')
-  stats(
-    @Query() query: ActivityStatsQueryDto,
-    @CurrentUser() user: AuthenticatedUser,
-  ) {
-    return this.getActivityStats.execute(user.id, query.today);
-  }
-
-  @Get(':id')
-  get(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
-    return this.getActivity.execute({ activityId: id, userId: user.id });
   }
 }
