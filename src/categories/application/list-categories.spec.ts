@@ -4,15 +4,22 @@ import { ListCategories } from './list-categories';
 
 class FakeRepository extends CategoryRepository {
   constructor(private categories: Category[]) { super(); }
-  async findAll(): Promise<Category[]> {
-    return this.categories;
-  }
+  async findAvailableFor(): Promise<Category[]> { return this.categories; }
+  findByKey(): Promise<Category | null> { throw new Error('no usado'); }
+  findById(): Promise<Category | null> { throw new Error('no usado'); }
+  create(): Promise<Category> { throw new Error('no usado'); }
+  update(): Promise<Category> { throw new Error('no usado'); }
+  softDelete(): Promise<void> { throw new Error('no usado'); }
 }
 
+const make = (over: Partial<Category>): Category => ({
+  id: 1, key: 'study', userId: null, name: 'Estudio', color: '#B7D9BD', sortOrder: 1, ...over,
+});
+
 describe('ListCategories', () => {
-  it('devuelve las categorías del repositorio', async () => {
-    const categories = [{ id: 1, key: 'study', name: 'Estudio', color: '#B7D9BD', sortOrder: 1 }];
-    const result = await new ListCategories(new FakeRepository(categories)).execute();
+  it('devuelve las categorías disponibles para el usuario', async () => {
+    const categories = [make({})];
+    const result = await new ListCategories(new FakeRepository(categories)).execute('u1');
     expect(result).toEqual(categories);
   });
 });

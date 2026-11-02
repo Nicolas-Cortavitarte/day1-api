@@ -1,4 +1,6 @@
 export type WeightUnit = 'KG' | 'LB';
+export type ThemePreference = 'LIGHT' | 'DARK' | 'SYSTEM';
+export type FontScale = 'SMALL' | 'MEDIUM' | 'LARGE';
 
 export interface UserPreferences {
   readonly timezone: string;
@@ -7,5 +9,7 @@ export interface UserPreferences {
   readonly preferredWeightUnit: WeightUnit;
   readonly notificationsEnabled: boolean;
   readonly defaultReminderMinutes: number | null;
-  readonly dailySummaryTime: string | null; 
+  readonly dailySummaryTime: string | null;
+  readonly theme: ThemePreference;
+  readonly fontScale: FontScale;
 }

@@ -24,6 +24,7 @@ export class PrismaUserPreferencesRepository extends UserPreferencesRepository {
 function toDomain(row: {
   timezone: string; locale: string; weekStartsOn: number; preferredWeightUnit: string;
   notificationsEnabled: boolean; defaultReminderMinutes: number | null; dailySummaryTime: Date | null;
+  theme: string; fontScale: string;
 }): UserPreferences {
   return {
     timezone: row.timezone,
@@ -33,6 +34,8 @@ function toDomain(row: {
     notificationsEnabled: row.notificationsEnabled,
     defaultReminderMinutes: row.defaultReminderMinutes,
     dailySummaryTime: row.dailySummaryTime ? row.dailySummaryTime.toISOString().slice(11, 19) : null,
+    theme: row.theme as UserPreferences['theme'],
+    fontScale: row.fontScale as UserPreferences['fontScale'],
   };
 }
 
