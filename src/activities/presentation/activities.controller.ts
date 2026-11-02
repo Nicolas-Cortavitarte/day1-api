@@ -26,6 +26,8 @@ import { RescheduleActivityDto } from './reschedule-activity.dto';
 import { GetActivity } from '../application/get-activity';
 import { UpdateActivity } from '../application/update-activity';
 import { UpdateActivityDto } from './update-activity.dto';
+import { GetActivityStats } from '../application/get-activity-stats';
+import { ActivityStatsQueryDto } from './activity-stats-query.dto';
 
 @Controller('activities')
 export class ActivitiesController {
@@ -38,6 +40,7 @@ export class ActivitiesController {
     private readonly rescheduleActivity: RescheduleActivity,
     private readonly getActivity: GetActivity,
     private readonly updateActivity: UpdateActivity,
+    private readonly getActivityStats: GetActivityStats,
   ) {}
 
   @Post()
@@ -130,5 +133,18 @@ export class ActivitiesController {
       toDate: dto.toDate,
       toTime: dto.toTime ?? null,
     });
+  }
+
+  @Get('stats')
+  stats(
+    @Query() query: ActivityStatsQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.getActivityStats.execute(user.id, query.today);
+  }
+
+  @Get(':id')
+  get(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.getActivity.execute({ activityId: id, userId: user.id });
   }
 }
