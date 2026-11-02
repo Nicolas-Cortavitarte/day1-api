@@ -7,9 +7,10 @@ import { ActivitiesModule } from './activities/activities.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ExercisesModule } from './exercises/exercises.module';
 import { WorkoutsModule } from './workouts/workouts.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ActivitiesModule, CategoriesModule, ExercisesModule, WorkoutsModule],
+  imports: [PrismaModule, AuthModule, ActivitiesModule, CategoriesModule, ExercisesModule, WorkoutsModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
