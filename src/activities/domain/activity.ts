@@ -9,6 +9,8 @@ export interface Activity {
   readonly scheduledDate: string;
   readonly startTime: string | null;
   readonly durationMinutes: number | null;
+  readonly reminderMinutes: number | null;
+  readonly recurrenceId: string | null;
   readonly completedAt: Date | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;

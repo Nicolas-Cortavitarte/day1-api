@@ -50,6 +50,30 @@ export class PrismaActivityRecurrenceRepository extends ActivityRecurrenceReposi
       return toDomain(recurrenceRow);
     });
   }
+
+  async findById(id: string): Promise<ActivityRecurrence | null> {
+    const row = await this.prisma.activityRecurrence.findUnique({ where: { id } });
+    return row ? toDomain(row) : null;
+  }
+
+  async updateAndCascade(
+    id: string,
+    changes: Partial<
+      Pick<ActivityRecurrence, 'title' | 'description' | 'categoryId' | 'durationMinutes' | 'reminderMinutes'>
+    >,
+  ): Promise<ActivityRecurrence> {
+    const today = toDateOnly(fromDateOnly(new Date()));
+
+    const [recurrenceRow] = await this.prisma.$transaction([
+      this.prisma.activityRecurrence.update({ where: { id }, data: changes }),
+      this.prisma.activity.updateMany({
+        where: { recurrenceId: id, scheduledDate: { gte: today }, completedAt: null, deletedAt: null },
+        data: changes,
+      }),
+    ]);
+
+    return toDomain(recurrenceRow);
+  }
 }
 
 function toDomain(row: {

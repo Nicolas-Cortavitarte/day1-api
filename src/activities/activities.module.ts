@@ -15,6 +15,7 @@ import { PrismaActivityRecurrenceRepository } from './infrastructure/prisma-acti
 import { ActivityRecurrencesController } from './infrastructure/activity-recurrences.controller';
 import { ActivitiesController } from './presentation/activities.controller';
 import { UpdateActivity } from './application/update-activity';
+import { UpdateActivityRecurrence } from './application/update-activity-recurrence';
 import { ActivityStatsRepository } from './application/activity-stats-repository';
 import { PrismaActivityStatsRepository } from './infrastructure/prisma-activity-stats-repository';
 import { GetActivityStats } from './application/get-activity-stats';
@@ -34,6 +35,7 @@ import { GetActivityStats } from './application/get-activity-stats';
     RescheduleActivity,
     GetActivity,
     CreateActivityRecurrence,
+    UpdateActivityRecurrence,
     { provide: ActivityStatsRepository, useClass: PrismaActivityStatsRepository },
     GetActivityStats,
   ],
