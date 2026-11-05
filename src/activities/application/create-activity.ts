@@ -11,6 +11,7 @@ export interface CreateActivityInput {
   scheduledDate: string;
   startTime?: string | null;
   durationMinutes?: number | null;
+  reminderMinutes?: number | null;
 }
 
 @Injectable()
@@ -31,7 +32,9 @@ export class CreateActivity {
       scheduledDate: input.scheduledDate,
       startTime: input.startTime ?? null,
       durationMinutes: input.durationMinutes ?? null,
-    }, 
+      reminderMinutes: input.reminderMinutes ?? null,
+      recurrenceId: null,
+    },
     { createWorkoutSession: isGymActivity }, 
   );
   }

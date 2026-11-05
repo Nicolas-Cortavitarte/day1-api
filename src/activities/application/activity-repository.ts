@@ -25,7 +25,7 @@ export abstract class ActivityRepository {
   abstract update(
     id: string,
     changes: Partial<
-      Pick<Activity, 'title' | 'description' | 'categoryId' | 'durationMinutes'>
+      Pick<Activity, 'title' | 'description' | 'categoryId' | 'durationMinutes' | 'reminderMinutes'>
     >,
   ): Promise<Activity>;
 

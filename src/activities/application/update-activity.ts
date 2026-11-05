@@ -9,6 +9,7 @@ export interface UpdateActivityInput {
   title?: string;
   description?: string;
   durationMinutes?: number;
+  reminderMinutes?: number;
 }
 
 @Injectable()
@@ -26,6 +27,7 @@ export class UpdateActivity {
       title: input.title,
       description: input.description,
       durationMinutes: input.durationMinutes,
+      reminderMinutes: input.reminderMinutes,
     });
   }
 }

@@ -21,6 +21,7 @@ export class PrismaActivityRepository extends ActivityRepository {
           scheduledDate: toDateOnly(activity.scheduledDate),
           startTime: activity.startTime ? toTimeOnly(activity.startTime) : null,
           durationMinutes: activity.durationMinutes,
+          reminderMinutes: activity.reminderMinutes,
         },
       });
       if (options?.createWorkoutSession) {
@@ -54,7 +55,9 @@ export class PrismaActivityRepository extends ActivityRepository {
 
   async update(
     id: string,
-    changes: Partial<Pick<Activity, 'title' | 'description' | 'categoryId' | 'durationMinutes'>>,
+    changes: Partial<
+      Pick<Activity, 'title' | 'description' | 'categoryId' | 'durationMinutes' | 'reminderMinutes'>
+    >,
   ): Promise<Activity> {
     const row = await this.prisma.activity.update({ where: { id }, data: changes });
     return toDomain(row);
@@ -83,6 +86,7 @@ export class PrismaActivityRepository extends ActivityRepository {
 function toDomain(row: {
   id: string; userId: string; categoryId: number; title: string; description: string | null;
   scheduledDate: Date; startTime: Date | null; durationMinutes: number | null;
+  reminderMinutes: number | null; recurrenceId: string | null;
   completedAt: Date | null; createdAt: Date; updatedAt: Date;
 }): Activity {
   return {
@@ -94,6 +98,8 @@ function toDomain(row: {
     scheduledDate: fromDateOnly(row.scheduledDate),
     startTime: row.startTime ? fromTimeOnly(row.startTime) : null,
     durationMinutes: row.durationMinutes,
+    reminderMinutes: row.reminderMinutes,
+    recurrenceId: row.recurrenceId,
     completedAt: row.completedAt,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
